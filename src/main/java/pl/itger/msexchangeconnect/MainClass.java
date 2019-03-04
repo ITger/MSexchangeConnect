@@ -42,8 +42,6 @@ public class MainClass {
         }
         ExecutorService executor = Executors.newFixedThreadPool(1);
         Future<?> future = executor.submit(exchangeCli);
-        //List<String> smsy = new ArrayList<String>();
-        logger.info("future executor.submitted ... ");
         try {
             future.get(60, TimeUnit.SECONDS);
         } catch (TimeoutException te) {

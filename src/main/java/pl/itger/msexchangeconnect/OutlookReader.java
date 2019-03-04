@@ -88,9 +88,11 @@ public class OutlookReader implements Runnable {
      */
     private void connect() throws URISyntaxException, IOException {
         LOGGER.info("connecting to ExchangeService");
+        // the NewClass class contains hardcoded login and password
+        // data as public static strings.
         this.service.setCredentials(new WebCredentials(
-                "testingews@outlook.com",
-                "Gn2nvhTf"));
+                NewClass.login,
+                NewClass.passwd));
         this.service.setUrl(new URI("https://outlook.live.com/ews/exchange.asmx"));
         this.service.setTimeout(Integer.parseInt("60000"));
     }
