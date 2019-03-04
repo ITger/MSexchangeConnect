@@ -68,13 +68,14 @@ public class OutlookReader implements Runnable {
     private final String folderName;
 
     /**
-     *
+     * The fromDate parameter is used to limit readed mails not older that fromDate.
      * @param fromDate
      * @throws IOException
      * @throws URISyntaxException
      */
     public OutlookReader(final DateTime fromDate) throws IOException, URISyntaxException {
         this.fromDate = fromDate;
+        // this folderName is a Inbox subfolder.
         this.folderName = "subFolderForTests";
         this.service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
         connect();
@@ -88,8 +89,10 @@ public class OutlookReader implements Runnable {
      */
     private void connect() throws URISyntaxException, IOException {
         LOGGER.info("connecting to ExchangeService");
-        // the NewClass class contains hardcoded login and password
-        // data as public static strings.
+        // the NewClass is a simple plain java class that
+        // contains only two fields, hardcoded login and password
+        // data to access my test email account on outlook.live.com.
+        // these fields are public static strings.
         this.service.setCredentials(new WebCredentials(
                 NewClass.login,
                 NewClass.passwd));
@@ -108,10 +111,7 @@ public class OutlookReader implements Runnable {
                     break;
                 }
             }
-        } catch (final ServiceLocalException e1) {
-            LOGGER.log(Level.SEVERE, e1.getMessage(), e1);
-            return;
-        } catch (final Exception e1) {
+        } catch (Exception e1) {
             LOGGER.log(Level.SEVERE, e1.getMessage(), e1);
             return;
         }
@@ -127,10 +127,7 @@ public class OutlookReader implements Runnable {
         }
         view.setPropertySet(new PropertySet(BasePropertySet.IdOnly, ItemSchema.Subject, ItemSchema.DateTimeReceived));
 
-        SearchFilterCollection sfc = new SearchFilter.SearchFilterCollection(LogicalOperator.And,
-                new SearchFilter.ContainsSubstring(ItemSchema.Subject, "testing ews"),
-                //new SearchFilter.ContainsSubstring(ItemSchema.Body, ""),
-                new SearchFilter.IsGreaterThan(EmailMessageSchema.DateTimeCreated, fromDate.toDate()));
+        final SearchFilterCollection sfc = makeFilterCollection();
 
         while (!Thread.interrupted()) {
             try {
@@ -165,5 +162,18 @@ public class OutlookReader implements Runnable {
         }
         this.service = null;
         return;
+    }
+
+    /**
+     * In this case we are interested only in mails that subject contains
+     * the "testing ews" string.
+     * @return
+     */
+    private SearchFilterCollection makeFilterCollection() {
+        SearchFilterCollection sfc = new SearchFilter.SearchFilterCollection(LogicalOperator.And,
+                new SearchFilter.ContainsSubstring(ItemSchema.Subject, "testing ews"),
+                //new SearchFilter.ContainsSubstring(ItemSchema.Body, ""),
+                new SearchFilter.IsGreaterThan(EmailMessageSchema.DateTimeCreated, fromDate.toDate()));
+        return sfc;
     }
 }
