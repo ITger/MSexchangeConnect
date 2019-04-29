@@ -1,6 +1,6 @@
 # MSexchangeConnect
-Sample java project how to connect to a mail account on outlook.com and get some data from it. 
-
+Sample java project on how to connect to a mail account on outlook.com and get some data from it. 
+Sample project how to write a Microsoft Exchange Server java client.
 
 
 In case you want to use your private corporation MS Exchange server it's possible that you need to import some certificates:
